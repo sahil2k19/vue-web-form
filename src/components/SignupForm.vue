@@ -1,12 +1,13 @@
 <template>
   <div>
-    <form action="">
+    <form action="" @submit="handleSubmit">
     <label>Email:</label>
     <input type="email" required v-model="email">
 
     <label>Password:</label>
     <input type="Password" required v-model="password">
-
+    <div v-if="passwordErorr" class="error" > {{ passwordErorr }}</div>
+   
     <label> Role</label>
     <select v-model="role">
         <option value="developer">Web Developer</option>
@@ -14,9 +15,9 @@
     </select>
 
     <label >Skills:</label>
-    <input type="text" required v-model="tempSkill" @keyup="addSkills">
-    <div v-for="skill in skills" :key="skill" class="pill" >
-        {{ skill }}
+    <input type="text"  v-model="tempSkill" @keyup="addSkill">
+    <div @click="deleteSkill(skill)" v-for="skill in skills" :key="skill" class="pill" >
+        <div >{{ skill }}</div>
     </div>
     
 
@@ -25,14 +26,19 @@
         <label>Accept terms and conditions</label>
     </div>
 
+    <div class="submit">
+        <button>Create An Account</button>
+    </div>
+
   </form>
-  <p>Email: {{ email }}</p>
+  <div v-if="showDetail" class="showDetail">
+    <p>Email: {{ email }}</p>
   <p>Password: {{ password }}</p>
   <p>Role: {{ role }}</p>
   <p>Terms Accepted: {{ terms }}</p>
-  <p>Name : {{ name }}</p>
   <p>tempSkills: {{ tempSkill }}</p>
   <p>skills:{{ skills }}</p>
+  </div>
   </div>
   
 </template>
@@ -45,13 +51,14 @@ export default {
             password:"",
             role:"",
             terms:false,
-            name:[],
             tempSkill:'',
             skills:[],
+            passwordErorr:'',
+            showDetail:false,
         }
     },
     methods:{
-        addSkills(e){
+        addSkill(e){
             console.log(e);
             if(e.key === ',' && this.tempSkill){
                 if(this.skills.includes(this.tempSkill)){
@@ -62,6 +69,20 @@ export default {
                 }
                 this.tempSkill=''
             }
+        },
+        deleteSkill(skill){
+            this.skills = this.skills.filter((item)=> skill !==item);
+        },
+        handleSubmit(e){
+            e.preventDefault();
+            console.log("form submitted")
+            // vallid password'
+            this.passwordErorr = this.password.length>5 ? '': 'Password must be at least 6 char long'
+            if(!this.passwordErorr){
+                this.showDetail = true;
+            }
+            
+            
         }
     }
 }
@@ -115,6 +136,18 @@ export default {
         color:#777;
         cursor:pointer;
 
+    }
+    button {
+    background: #0b6dff;
+    border: 0;
+    padding: 10px 20px;
+    margin-top: 20px;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    }
+    .submit {
+        text-align: center;
     }
     
 </style>
